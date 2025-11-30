@@ -135,37 +135,37 @@ def list_security_groups(region: str):
     
 tools = [
     FunctionTool(
-        name="aws.create_security_group",
+        name="ec2.create_security_group",
         description="Create a security group and optionally add inbound rules.",
         fn=create_security_group,
         parameters=CreateSecurityGroupParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.delete_security_group",
+        name="ec2.delete_security_group",
         description="Delete a security group by GroupId.",
         fn=delete_security_group,
         parameters=DeleteSecurityGroupParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.authorize_security_group_rules",
+        name="ec2.authorize_security_group_rules",
         description="Add inbound rules to a security group.",
         fn=authorize_rules,
         parameters=ModifyRulesParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.revoke_security_group_rules",
+        name="ec2.revoke_security_group_rules",
         description="Remove inbound rules from a security group.",
         fn=revoke_rules,
         parameters=ModifyRulesParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.describe_security_group",
+        name="ec2.describe_security_group",
         description="Describe a specific security group.",
         fn=describe_security_group,
         parameters=DescribeSGParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_security_groups",
+        name="ec2.list_security_groups",
         description="List all security groups in a region.",
         fn=list_security_groups,
         parameters=ListSGParams.model_json_schema(),

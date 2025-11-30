@@ -7,55 +7,67 @@ from mcp_server.models.ec2 import (
 import boto3
 import os
 from fastmcp.tools import FunctionTool
+from typing import Optional, List, Dict, Any
 
 DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 
-def create_instance(params: CreateInstanceParams):
-    region = params.region or DEFAULT_REGION
+def create_instance(
+    *,
+    ImageId: str,
+    InstanceType: str,
+    MinCount: int = 1,
+    MaxCount: int = 1,
+    KeyName: Optional[str] = None,
+    SubnetId: Optional[str] = None,
+    SecurityGroupIds: Optional[List[str]] = None,
+    BlockDeviceMappings: Optional[List[Dict[str, Any]]] = None,
+    NetworkInterfaces: Optional[List[Dict[str, Any]]] = None,
+    TagSpecifications: Optional[List[Dict[str, Any]]] = None,
+    IamInstanceProfile: Optional[Dict[str, str]] = None,
+    MetadataOptions: Optional[Dict[str, Any]] = None,
+    UserData: Optional[str] = None,
+    ExtraParams: Optional[Dict[str, Any]] = None,
+    region: str = "ap-south-1"
+):
+    region = region or DEFAULT_REGION
     ec2 = boto3.client("ec2", region_name=region)
 
     payload = {
-        "ImageId": params.ImageId,
-        "InstanceType": params.InstanceType,
-        "MinCount": params.MinCount,
-        "MaxCount": params.MaxCount,
+        "ImageId": ImageId,
+        "InstanceType": InstanceType,
+        "MinCount": MinCount,
+        "MaxCount": MaxCount,
     }
 
-    if params.KeyName:
-        payload["KeyName"] = params.KeyName
+    if KeyName:
+        payload["KeyName"] = KeyName
 
-    if params.SubnetId:
-        payload["SubnetId"] = params.SubnetId
+    if SubnetId:
+        payload["SubnetId"] = SubnetId
 
-    if params.SecurityGroupIds:
-        payload["SecurityGroupIds"] = params.SecurityGroupIds
+    if SecurityGroupIds:
+        payload["SecurityGroupIds"] = SecurityGroupIds
 
-    if params.BlockDeviceMappings:
-        payload["BlockDeviceMappings"] = [
-            bd.model_dump(exclude_none=True)
-            for bd in params.BlockDeviceMappings
-        ]
+    if BlockDeviceMappings:
+        payload["BlockDeviceMappings"] = BlockDeviceMappings
 
-    if params.NetworkInterfaces:
-        payload["NetworkInterfaces"] = [
-            ni.model_dump(exclude_none=True)
-            for ni in params.NetworkInterfaces
-        ]
+    if NetworkInterfaces:
+        payload["NetworkInterfaces"] = NetworkInterfaces
 
-    if params.TagSpecifications:
-        payload["TagSpecifications"] = params.TagSpecifications
+    if TagSpecifications:
+        payload["TagSpecifications"] = TagSpecifications
 
-    if params.IamInstanceProfile:
-        payload["IamInstanceProfile"] = params.IamInstanceProfile
+    if IamInstanceProfile:
+        payload["IamInstanceProfile"] = IamInstanceProfile
 
-    if params.MetadataOptions:
-        payload["MetadataOptions"] = params.MetadataOptions
+    if MetadataOptions:
+        payload["MetadataOptions"] = MetadataOptions
 
-    if params.UserData:
-        payload["UserData"] = params.UserData
+    if UserData:
+        payload["UserData"] = UserData
 
-    if params.ExtraParams:
-        payload.update(params.ExtraParams)
+    if ExtraParams:
+        payload.update(ExtraParams)
 
     try:
         resp = ec2.run_instances(**payload)
@@ -71,29 +83,38 @@ def create_instance(params: CreateInstanceParams):
     except Exception as e:
         return {"error": str(e)}
 
-def create_instance_minimal(params: CreateInstanceMinimalParams):
-    region = params.region or DEFAULT_REGION
+def create_instance_minimal(
+    *,
+    ImageId: str,
+    InstanceType: str,
+    KeyName: Optional[str] = None,
+    SecurityGroupIds: Optional[List[str]] = None,
+    SubnetId: Optional[str] = None,
+    TagSpecifications: Optional[List[Dict[str, Any]]] = None,
+    region: str = "ap-south-1"
+):
+    region = region or DEFAULT_REGION
     ec2 = boto3.client("ec2", region_name=region)
 
     try:
         payload = {
-            "ImageId": params.ImageId,
-            "InstanceType": params.InstanceType,
+            "ImageId": ImageId,
+            "InstanceType": InstanceType,
             "MinCount": 1,
             "MaxCount": 1,
         }
 
-        if params.KeyName:
-            payload["KeyName"] = params.KeyName
+        if KeyName:
+            payload["KeyName"] = KeyName
 
-        if params.SecurityGroupIds:
-            payload["SecurityGroupIds"] = params.SecurityGroupIds
+        if SecurityGroupIds:
+            payload["SecurityGroupIds"] = SecurityGroupIds
 
-        if params.SubnetId:
-            payload["SubnetId"] = params.SubnetId
+        if SubnetId:
+            payload["SubnetId"] = SubnetId
 
-        if params.TagSpecifications:
-            payload["TagSpecifications"] = params.TagSpecifications
+        if TagSpecifications:
+            payload["TagSpecifications"] = TagSpecifications
 
         resp = ec2.run_instances(**payload)
         inst = resp["Instances"][0]
@@ -108,57 +129,67 @@ def create_instance_minimal(params: CreateInstanceMinimalParams):
     except Exception as e:
         return {"error": str(e)}
 
-def create_spot_instance(params: CreateSpotInstanceParams):
-    region = params.region or DEFAULT_REGION
+def create_spot_instance(
+    *,
+    ImageId: str,
+    InstanceType: str,
+    MaxPrice: Optional[str] = None,
+    KeyName: Optional[str] = None,
+    SecurityGroupIds: Optional[List[str]] = None,
+    SubnetId: Optional[str] = None,
+    BlockDeviceMappings: Optional[List[Dict[str, Any]]] = None,
+    NetworkInterfaces: Optional[List[Dict[str, Any]]] = None,
+    TagSpecifications: Optional[List[Dict[str, Any]]] = None,
+    IamInstanceProfile: Optional[Dict[str, str]] = None,
+    MetadataOptions: Optional[Dict[str, Any]] = None,
+    UserData: Optional[str] = None,
+    ExtraParams: Optional[Dict[str, Any]] = None,
+    region: str = "ap-south-1"
+):
+    region = region or DEFAULT_REGION
     ec2 = boto3.client("ec2", region_name=region)
 
     launch_spec = {
-        "ImageId": params.ImageId,
-        "InstanceType": params.InstanceType,
+        "ImageId": ImageId,
+        "InstanceType": InstanceType,
     }
 
-    if params.KeyName:
-        launch_spec["KeyName"] = params.KeyName
+    if KeyName:
+        launch_spec["KeyName"] = KeyName
 
-    if params.SecurityGroupIds:
-        launch_spec["SecurityGroupIds"] = params.SecurityGroupIds
+    if SecurityGroupIds:
+        launch_spec["SecurityGroupIds"] = SecurityGroupIds
 
-    if params.SubnetId:
-        launch_spec["SubnetId"] = params.SubnetId
+    if SubnetId:
+        launch_spec["SubnetId"] = SubnetId
 
-    if params.BlockDeviceMappings:
-        launch_spec["BlockDeviceMappings"] = [
-            bd.model_dump(exclude_none=True)
-            for bd in params.BlockDeviceMappings
-        ]
+    if BlockDeviceMappings:
+        launch_spec["BlockDeviceMappings"] = BlockDeviceMappings
 
-    if params.NetworkInterfaces:
-        launch_spec["NetworkInterfaces"] = [
-            ni.model_dump(exclude_none=True)
-            for ni in params.NetworkInterfaces
-        ]
+    if NetworkInterfaces:
+        launch_spec["NetworkInterfaces"] = NetworkInterfaces
 
-    if params.TagSpecifications:
-        launch_spec["TagSpecifications"] = params.TagSpecifications
+    if TagSpecifications:
+        launch_spec["TagSpecifications"] = TagSpecifications
 
-    if params.IamInstanceProfile:
-        launch_spec["IamInstanceProfile"] = params.IamInstanceProfile
+    if IamInstanceProfile:
+        launch_spec["IamInstanceProfile"] = IamInstanceProfile
 
-    if params.MetadataOptions:
-        launch_spec["MetadataOptions"] = params.MetadataOptions
+    if MetadataOptions:
+        launch_spec["MetadataOptions"] = MetadataOptions
 
-    if params.UserData:
-        launch_spec["UserData"] = params.UserData
+    if UserData:
+        launch_spec["UserData"] = UserData
 
-    if params.ExtraParams:
-        launch_spec.update(params.ExtraParams)
+    if ExtraParams:
+        launch_spec.update(ExtraParams)
 
     try:
         resp = ec2.request_spot_instances(
             LaunchSpecification=launch_spec,
             InstanceCount=1,
             Type="one-time",
-            MaxPrice=params.MaxPrice,
+            MaxPrice=MaxPrice,
         )
 
         sir = resp["SpotInstanceRequests"][0]
@@ -172,23 +203,29 @@ def create_spot_instance(params: CreateSpotInstanceParams):
     except Exception as e:
         return {"error": str(e)}
     
-def generate_instance_ssh_instruction(params: InstanceSSHInstructionParams):
-    region = params.region or DEFAULT_REGION
+def generate_instance_ssh_instruction(
+    *,
+    instance_id: str,
+    key_name: Optional[str] = None,
+    pem_path: Optional[str] = None,
+    region: str = "ap-south-1"
+):
+    region = region or DEFAULT_REGION
     ec2 = boto3.client("ec2", region_name=region)
 
     try:
-        resp = ec2.describe_instances(InstanceIds=[params.instance_id])
+        resp = ec2.describe_instances(InstanceIds=[instance_id])
         inst = resp["Reservations"][0]["Instances"][0]
 
         pub_ip = inst.get("PublicIpAddress")
         if not pub_ip:
             return {"error": "Instance has no public IP"}
 
-        key_name = params.key_name or inst.get("KeyName")
+        key_name = key_name or inst.get("KeyName")
         if not key_name:
             return {"error": "No KeyPair associated with instance"}
 
-        pem_path = params.pem_path or f"~/{key_name}.pem"
+        pem_path = pem_path or f"~/{key_name}.pem"
 
         # Best-effort username guess
         ami = inst["ImageId"]
@@ -202,7 +239,7 @@ def generate_instance_ssh_instruction(params: InstanceSSHInstructionParams):
         ssh_command = f"ssh -i {pem_path} {user}@{pub_ip}"
 
         return {
-            "instance_id": params.instance_id,
+            "instance_id": instance_id,
             "region": region,
             "public_ip": pub_ip,
             "key_name": key_name,
@@ -216,25 +253,25 @@ def generate_instance_ssh_instruction(params: InstanceSSHInstructionParams):
     
 tools = [
     FunctionTool(
-        name="aws.create_instance",
+        name="ec2.create_instance",
         description="Create an EC2 instance with full parameter support.",
         fn=create_instance,
         parameters=CreateInstanceParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.create_instance_minimal",
+        name="ec2.create_instance_minimal",
         description="Create an EC2 instance with minimal required fields.",
         fn=create_instance_minimal,
         parameters=CreateInstanceMinimalParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.create_spot_instance",
+        name="ec2.create_spot_instance",
         description="Create a Spot EC2 instance using request_spot_instances.",
         fn=create_spot_instance,
         parameters=CreateSpotInstanceParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.generate_instance_ssh_instruction",
+        name="ec2.generate_instance_ssh_instruction",
         description="Generate ready-to-use SSH command for an EC2 instance.",
         fn=generate_instance_ssh_instruction,
         parameters=InstanceSSHInstructionParams.model_json_schema(),

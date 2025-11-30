@@ -2,6 +2,7 @@
 
 import boto3
 from fastmcp.tools import FunctionTool
+from typing import Optional, Dict, Any, List
 
 from mcp_server.models.ebs import (
     ListSnapshotsParams,
@@ -16,19 +17,25 @@ from mcp_server.models.ebs import (
 # =======================================================
 # CREATE SNAPSHOT
 # =======================================================
-def create_snapshot(params: CreateSnapshotParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def create_snapshot(
+    *,
+    VolumeId: str,
+    Description: Optional[str] = None,
+    Tags: Optional[Dict[str, str]] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     req = {
-        "VolumeId": params.VolumeId,
-        "Description": params.Description or f"Snapshot of {params.VolumeId}",
+        "VolumeId": VolumeId,
+        "Description": Description or f"Snapshot of {VolumeId}",
     }
 
-    if params.Tags:
+    if Tags:
         req["TagSpecifications"] = [
             {
                 "ResourceType": "snapshot",
-                "Tags": [{"Key": k, "Value": v} for k, v in params.Tags.items()],
+                "Tags": [{"Key": k, "Value": v} for k, v in Tags.items()],
             }
         ]
 
@@ -38,16 +45,21 @@ def create_snapshot(params: CreateSnapshotParams):
 # =======================================================
 # LIST SNAPSHOTS
 # =======================================================
-def list_snapshots(params: ListSnapshotsParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def list_snapshots(
+    *,
+    OwnerIds: Optional[List[str]] = None,
+    Filters: Optional[List[Dict[str, Any]]] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     req = {}
 
-    if params.OwnerIds:
-        req["OwnerIds"] = params.OwnerIds
+    if OwnerIds:
+        req["OwnerIds"] = OwnerIds
 
-    if params.Filters:
-        req["Filters"] = params.Filters
+    if Filters:
+        req["Filters"] = Filters
 
     resp = ec2.describe_snapshots(**req)
     return resp.get("Snapshots", [])
@@ -56,43 +68,60 @@ def list_snapshots(params: ListSnapshotsParams):
 # =======================================================
 # DESCRIBE A SPECIFIC SNAPSHOT
 # =======================================================
-def describe_snapshot(params: SnapshotIdParam):
-    ec2 = boto3.client("ec2", region_name=params.region)
-    resp = ec2.describe_snapshots(SnapshotIds=[params.SnapshotId])
+def describe_snapshot(
+    *,
+    SnapshotId: str,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
+    resp = ec2.describe_snapshots(SnapshotIds=[SnapshotId])
     return resp.get("Snapshots", [])
 
 
 # =======================================================
 # DELETE SNAPSHOT
 # =======================================================
-def delete_snapshot(params: DeleteSnapshotParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
-    return ec2.delete_snapshot(SnapshotId=params.SnapshotId)
+def delete_snapshot(
+    *,
+    SnapshotId: str,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
+    return ec2.delete_snapshot(SnapshotId=SnapshotId)
 
 
 # =======================================================
 # COPY SNAPSHOT (Cross Region Snapshot Copy)
 # =======================================================
-def copy_snapshot(params: CopySnapshotParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def copy_snapshot(
+    *,
+    SourceRegion: str,
+    SourceSnapshotId: str,
+    Description: Optional[str] = None,
+    Encrypted: Optional[bool] = None,
+    KmsKeyId: Optional[str] = None,
+    Tags: Optional[Dict[str, str]] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     req = {
-        "SourceRegion": params.SourceRegion,
-        "SourceSnapshotId": params.SourceSnapshotId,
-        "Description": params.Description or f"Copy of {params.SourceSnapshotId}",
+        "SourceRegion": SourceRegion,
+        "SourceSnapshotId": SourceSnapshotId,
+        "Description": Description or f"Copy of {SourceSnapshotId}",
     }
 
-    if params.Encrypted is not None:
-        req["Encrypted"] = params.Encrypted
+    if Encrypted is not None:
+        req["Encrypted"] = Encrypted
 
-    if params.KmsKeyId:
-        req["KmsKeyId"] = params.KmsKeyId
+    if KmsKeyId:
+        req["KmsKeyId"] = KmsKeyId
 
-    if params.Tags:
+    if Tags:
         req["TagSpecifications"] = [
             {
                 "ResourceType": "snapshot",
-                "Tags": [{"Key": k, "Value": v} for k, v in params.Tags.items()],
+                "Tags": [{"Key": k, "Value": v} for k, v in Tags.items()],
             }
         ]
 
@@ -102,27 +131,39 @@ def copy_snapshot(params: CopySnapshotParams):
 # =======================================================
 # CREATE VOLUME FROM SNAPSHOT (RESTORE)
 # =======================================================
-def restore_volume_from_snapshot(params: CreateVolumeFromSnapshotParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def restore_volume_from_snapshot(
+    *,
+    SnapshotId: str,
+    AvailabilityZone: str,
+    VolumeType: str = "gp3",
+    Size: Optional[int] = None,
+    Iops: Optional[int] = None,
+    Throughput: Optional[int] = None,
+    Encrypted: Optional[bool] = None,
+    KmsKeyId: Optional[str] = None,
+    ExtraParams: Optional[Dict[str, Any]] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     req = {
-        "SnapshotId": params.SnapshotId,
-        "AvailabilityZone": params.AvailabilityZone,
-        "VolumeType": params.VolumeType,
+        "SnapshotId": SnapshotId,
+        "AvailabilityZone": AvailabilityZone,
+        "VolumeType": VolumeType,
     }
 
-    if params.Size:
-        req["Size"] = params.Size
-    if params.Iops:
-        req["Iops"] = params.Iops
-    if params.Throughput:
-        req["Throughput"] = params.Throughput
-    if params.Encrypted is not None:
-        req["Encrypted"] = params.Encrypted
-    if params.KmsKeyId:
-        req["KmsKeyId"] = params.KmsKeyId
-    if params.ExtraParams:
-        req.update(params.ExtraParams)
+    if Size:
+        req["Size"] = Size
+    if Iops:
+        req["Iops"] = Iops
+    if Throughput:
+        req["Throughput"] = Throughput
+    if Encrypted is not None:
+        req["Encrypted"] = Encrypted
+    if KmsKeyId:
+        req["KmsKeyId"] = KmsKeyId
+    if ExtraParams:
+        req.update(ExtraParams)
 
     return ec2.create_volume(**req)
 
@@ -130,22 +171,28 @@ def restore_volume_from_snapshot(params: CreateVolumeFromSnapshotParams):
 # =======================================================
 # FAST SNAPSHOT RESTORE (ENABLE/DISABLE)
 # =======================================================
-def manage_fast_snapshot_restore(params: FastRestoreParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def manage_fast_snapshot_restore(
+    *,
+    SnapshotId: str,
+    AvailabilityZones: List[str],
+    State: str,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
-    if params.State not in ("enable", "disable"):
+    if State not in ("enable", "disable"):
         return {"error": "State must be 'enable' or 'disable'"}
 
-    if params.State == "enable":
+    if State == "enable":
         return ec2.enable_fast_snapshot_restores(
-            SnapshotId=params.SnapshotId,
-            AvailabilityZones=params.AvailabilityZones,
+            SnapshotId=SnapshotId,
+            AvailabilityZones=AvailabilityZones,
         )
 
-    if params.State == "disable":
+    if State == "disable":
         return ec2.disable_fast_snapshot_restores(
-            SnapshotId=params.SnapshotId,
-            AvailabilityZones=params.AvailabilityZones,
+            SnapshotId=SnapshotId,
+            AvailabilityZones=AvailabilityZones,
         )
 
 
@@ -154,43 +201,43 @@ def manage_fast_snapshot_restore(params: FastRestoreParams):
 # =======================================================
 tools = [
     FunctionTool(
-        name="aws.create_snapshot",
+        name="ebs.create_snapshot",
         description="Create an EBS snapshot from a volume.",
         fn=create_snapshot,
         parameters=CreateSnapshotParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_snapshots",
+        name="ebs.list_snapshots",
         description="List EBS snapshots (owned/shared/public).",
         fn=list_snapshots,
         parameters=ListSnapshotsParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.describe_snapshot",
+        name="ebs.describe_snapshot",
         description="Describe a specific snapshot.",
         fn=describe_snapshot,
         parameters=SnapshotIdParam.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.delete_snapshot",
+        name="ebs.delete_snapshot",
         description="Delete a snapshot.",
         fn=delete_snapshot,
         parameters=DeleteSnapshotParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.copy_snapshot",
+        name="ebs.copy_snapshot",
         description="Copy a snapshot to another region.",
         fn=copy_snapshot,
         parameters=CopySnapshotParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.restore_volume_from_snapshot",
+        name="ebs.restore_volume_from_snapshot",
         description="Create/restore an EBS volume from a snapshot.",
         fn=restore_volume_from_snapshot,
         parameters=CreateVolumeFromSnapshotParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.manage_fast_snapshot_restore",
+        name="ebs.manage_fast_snapshot_restore",
         description="Enable or disable Fast Snapshot Restore for AZs.",
         fn=manage_fast_snapshot_restore,
         parameters=FastRestoreParams.model_json_schema(),

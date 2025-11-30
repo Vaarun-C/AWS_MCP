@@ -8,49 +8,67 @@ from mcp_server.models.ec2.launch_templates import (
 import boto3
 import base64
 from fastmcp.tools import FunctionTool
+from typing import Optional, List, Dict, Any
 
 
-def create_launch_template(params: CreateLaunchTemplateParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def create_launch_template(
+    *,
+    LaunchTemplateName: str,
+    ImageId: str,
+    InstanceType: str,
+    VersionDescription: Optional[str] = None,
+    KeyName: Optional[str] = None,
+    SecurityGroupIds: Optional[List[str]] = None,
+    SubnetId: Optional[str] = None,
+    UserData: Optional[str] = None,
+    TagSpecifications: Optional[List[Dict[str, Any]]] = None,
+    BlockDeviceMappings: Optional[List[Dict[str, Any]]] = None,
+    NetworkInterfaces: Optional[List[Dict[str, Any]]] = None,
+    IamInstanceProfile: Optional[Dict[str, str]] = None,
+    MetadataOptions: Optional[Dict[str, Any]] = None,
+    ExtraParams: Optional[Dict[str, Any]] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     lt_data = {
-        "ImageId": params.ImageId,
-        "InstanceType": params.InstanceType,
+        "ImageId": ImageId,
+        "InstanceType": InstanceType,
     }
 
-    if params.KeyName:
-        lt_data["KeyName"] = params.KeyName
+    if KeyName:
+        lt_data["KeyName"] = KeyName
 
-    if params.SecurityGroupIds:
-        lt_data["SecurityGroupIds"] = params.SecurityGroupIds
+    if SecurityGroupIds:
+        lt_data["SecurityGroupIds"] = SecurityGroupIds
 
-    if params.SubnetId:
-        lt_data["SubnetId"] = params.SubnetId
+    if SubnetId:
+        lt_data["SubnetId"] = SubnetId
 
-    if params.UserData:
-        lt_data["UserData"] = base64.b64encode(params.UserData.encode()).decode()
+    if UserData:
+        lt_data["UserData"] = base64.b64encode(UserData.encode()).decode()
 
-    if params.TagSpecifications:
-        lt_data["TagSpecifications"] = params.TagSpecifications
+    if TagSpecifications:
+        lt_data["TagSpecifications"] = TagSpecifications
 
-    if params.BlockDeviceMappings:
-        lt_data["BlockDeviceMappings"] = [bd.dict() for bd in params.BlockDeviceMappings]
+    if BlockDeviceMappings:
+        lt_data["BlockDeviceMappings"] = BlockDeviceMappings
 
-    if params.NetworkInterfaces:
-        lt_data["NetworkInterfaces"] = [ni.dict() for ni in params.NetworkInterfaces]
+    if NetworkInterfaces:
+        lt_data["NetworkInterfaces"] = NetworkInterfaces
 
-    if params.IamInstanceProfile:
-        lt_data["IamInstanceProfile"] = params.IamInstanceProfile
+    if IamInstanceProfile:
+        lt_data["IamInstanceProfile"] = IamInstanceProfile
 
-    if params.MetadataOptions:
-        lt_data["MetadataOptions"] = params.MetadataOptions
+    if MetadataOptions:
+        lt_data["MetadataOptions"] = MetadataOptions
 
-    if params.ExtraParams:
-        lt_data.update(params.ExtraParams)
+    if ExtraParams:
+        lt_data.update(ExtraParams)
 
     resp = ec2.create_launch_template(
-        LaunchTemplateName=params.LaunchTemplateName,
-        VersionDescription=params.VersionDescription,
+        LaunchTemplateName=LaunchTemplateName,
+        VersionDescription=VersionDescription or "",
         LaunchTemplateData=lt_data
     )
     return resp
@@ -60,36 +78,56 @@ def create_launch_template(params: CreateLaunchTemplateParams):
 # CREATE NEW VERSION
 # ================================================
 
-def create_launch_template_version(params: CreateLaunchTemplateVersionParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def create_launch_template_version(
+    *,
+    LaunchTemplateName: str,
+    VersionDescription: Optional[str] = None,
+    ImageId: Optional[str] = None,
+    InstanceType: Optional[str] = None,
+    KeyName: Optional[str] = None,
+    SecurityGroupIds: Optional[List[str]] = None,
+    SubnetId: Optional[str] = None,
+    UserData: Optional[str] = None,
+    TagSpecifications: Optional[List[Dict[str, Any]]] = None,
+    BlockDeviceMappings: Optional[List[Dict[str, Any]]] = None,
+    NetworkInterfaces: Optional[List[Dict[str, Any]]] = None,
+    IamInstanceProfile: Optional[Dict[str, str]] = None,
+    MetadataOptions: Optional[Dict[str, Any]] = None,
+    ExtraParams: Optional[Dict[str, Any]] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     lt_data = {}
 
-    # Only include provided fields
-    allowed_fields = [
-        "ImageId", "InstanceType", "KeyName", "SecurityGroupIds",
-        "SubnetId", "UserData", "TagSpecifications", "BlockDeviceMappings",
-        "NetworkInterfaces", "IamInstanceProfile", "MetadataOptions"
-    ]
-
-    for field in allowed_fields:
-        value = getattr(params, field)
-        if value is not None:
-            if field == "UserData":
-                lt_data[field] = base64.b64encode(value.encode()).decode()
-            elif field == "BlockDeviceMappings":
-                lt_data[field] = [bd.dict() for bd in value]
-            elif field == "NetworkInterfaces":
-                lt_data[field] = [ni.dict() for ni in value]
-            else:
-                lt_data[field] = value
-
-    if params.ExtraParams:
-        lt_data.update(params.ExtraParams)
+    if ImageId:
+        lt_data["ImageId"] = ImageId
+    if InstanceType:
+        lt_data["InstanceType"] = InstanceType
+    if KeyName:
+        lt_data["KeyName"] = KeyName
+    if SecurityGroupIds:
+        lt_data["SecurityGroupIds"] = SecurityGroupIds
+    if SubnetId:
+        lt_data["SubnetId"] = SubnetId
+    if UserData:
+        lt_data["UserData"] = base64.b64encode(UserData.encode()).decode()
+    if TagSpecifications:
+        lt_data["TagSpecifications"] = TagSpecifications
+    if BlockDeviceMappings:
+        lt_data["BlockDeviceMappings"] = BlockDeviceMappings
+    if NetworkInterfaces:
+        lt_data["NetworkInterfaces"] = NetworkInterfaces
+    if IamInstanceProfile:
+        lt_data["IamInstanceProfile"] = IamInstanceProfile
+    if MetadataOptions:
+        lt_data["MetadataOptions"] = MetadataOptions
+    if ExtraParams:
+        lt_data.update(ExtraParams)
 
     resp = ec2.create_launch_template_version(
-        LaunchTemplateName=params.LaunchTemplateName,
-        VersionDescription=params.VersionDescription,
+        LaunchTemplateName=LaunchTemplateName,
+        VersionDescription=VersionDescription or "",
         LaunchTemplateData=lt_data
     )
 
@@ -100,16 +138,21 @@ def create_launch_template_version(params: CreateLaunchTemplateVersionParams):
 # DESCRIBE TEMPLATE
 # ================================================
 
-def describe_launch_template(params: DescribeLaunchTemplateParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def describe_launch_template(
+    *,
+    LaunchTemplateName: Optional[str] = None,
+    LaunchTemplateId: Optional[str] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
-    if params.LaunchTemplateId:
+    if LaunchTemplateId:
         return ec2.describe_launch_templates(
-            LaunchTemplateIds=[params.LaunchTemplateId]
+            LaunchTemplateIds=[LaunchTemplateId]
         )
     else:
         return ec2.describe_launch_templates(
-            LaunchTemplateNames=[params.LaunchTemplateName]
+            LaunchTemplateNames=[LaunchTemplateName]
         )
 
 
@@ -117,16 +160,21 @@ def describe_launch_template(params: DescribeLaunchTemplateParams):
 # DELETE TEMPLATE
 # ================================================
 
-def delete_launch_template(params: DeleteLaunchTemplateParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def delete_launch_template(
+    *,
+    LaunchTemplateName: Optional[str] = None,
+    LaunchTemplateId: Optional[str] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
-    if params.LaunchTemplateId:
+    if LaunchTemplateId:
         return ec2.delete_launch_template(
-            LaunchTemplateId=params.LaunchTemplateId
+            LaunchTemplateId=LaunchTemplateId
         )
     else:
         return ec2.delete_launch_template(
-            LaunchTemplateName=params.LaunchTemplateName
+            LaunchTemplateName=LaunchTemplateName
         )
 
 
@@ -143,53 +191,60 @@ def list_launch_templates(region: str = "ap-south-1"):
 # LAUNCH INSTANCE FROM TEMPLATE
 # ================================================
 
-def launch_from_template(params: LaunchFromTemplateParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def launch_from_template(
+    *,
+    LaunchTemplateName: str,
+    Version: Optional[str] = None,
+    MinCount: int = 1,
+    MaxCount: int = 1,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     resp = ec2.run_instances(
         LaunchTemplate={
-            "LaunchTemplateName": params.LaunchTemplateName,
-            "Version": params.Version or "$Latest"
+            "LaunchTemplateName": LaunchTemplateName,
+            "Version": Version or "$Latest"
         },
-        MinCount=params.MinCount,
-        MaxCount=params.MaxCount
+        MinCount=MinCount,
+        MaxCount=MaxCount
     )
 
     return resp
 
 tools = [
     FunctionTool(
-        name="aws.create_launch_template",
+        name="ec2.create_launch_template",
         description="Create a new EC2 Launch Template",
         fn=create_launch_template,
         parameters=CreateLaunchTemplateParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.create_launch_template_version",
+        name="ec2.create_launch_template_version",
         description="Create a new version of an existing launch template",
         fn=create_launch_template_version,
         parameters=CreateLaunchTemplateVersionParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.describe_launch_template",
+        name="ec2.describe_launch_template",
         description="Describe an EC2 launch template",
         fn=describe_launch_template,
         parameters=DescribeLaunchTemplateParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.delete_launch_template",
+        name="ec2.delete_launch_template",
         description="Delete an EC2 launch template",
         fn=delete_launch_template,
         parameters=DeleteLaunchTemplateParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_launch_templates",
+        name="ec2.list_launch_templates",
         description="List all EC2 launch templates in a region",
         fn=list_launch_templates,
         parameters={"type": "object", "properties": {"region": {"type": "string"}}}
     ),
     FunctionTool(
-        name="aws.launch_from_template",
+        name="ec2.launch_from_template",
         description="Launch an EC2 instance using an AWS Launch Template",
         fn=launch_from_template,
         parameters=LaunchFromTemplateParams.model_json_schema(),

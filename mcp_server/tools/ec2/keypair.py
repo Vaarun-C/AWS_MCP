@@ -87,19 +87,19 @@ def save_pem_file(key_name: str, pem_data: str) -> str:
 
 tools = [
     FunctionTool(
-        name="aws.create_keypair",
+        name="ec2.create_keypair",
         description="Create an EC2 KeyPair and optionally save the PEM file locally.",
         fn=create_keypair,
         parameters=CreateKeyPairParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.delete_keypair",
+        name="ec2.delete_keypair",
         description="Delete an EC2 KeyPair by name.",
         fn=delete_keypair,
         parameters=DeleteKeyPairParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_keypairs",
+        name="ec2.list_keypairs",
         description="List all EC2 KeyPairs in a region.",
         fn=list_keypairs,
         parameters=ListKeyPairsParams.model_json_schema(),

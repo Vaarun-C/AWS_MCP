@@ -79,31 +79,31 @@ def terminate_instance(*, instance_id: str, region: str = DEFAULT_REGION) -> dic
 
 tools = [
     FunctionTool(
-        name="aws.start_instance",
+        name="ec2.start_instance",
         description="Start an EC2 Instance",
         fn=start_instance,
         parameters=InstanceLifeCycleParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.stop_instance",
+        name="ec2.stop_instance",
         description="Stop a running EC2 instance",
         fn=stop_instance,
         parameters=InstanceLifeCycleParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.reboot_instance",
+        name="ec2.reboot_instance",
         description="Reboot a running EC2 instance",
         fn=reboot_instance,
         parameters=InstanceLifeCycleParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.hard_reboot_instance",
+        name="ec2.hard_reboot_instance",
         description="Hard Reboot a running EC2 instance",
         fn=hard_reboot_instance,
         parameters=InstanceLifeCycleParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.terminate_instance",
+        name="ec2.terminate_instance",
         description="Terminate a stopped EC2 Instance",
         fn=terminate_instance,
         parameters=InstanceLifeCycleParams.model_json_schema()

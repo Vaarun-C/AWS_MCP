@@ -11,6 +11,10 @@ from .instance_creation import tools as instance_creation_tools
 from .keypair import tools as keypair_tools
 from .security_groups import tools as security_group_tools
 from .launch_templates import tools as launch_template_tools
+from .ami import tools as ami_tools
+from .pricing import tools as pricing_tools
+from .metadata import tools as metadata_tools
+
 
 # Aggregate all tools into a single list
 tools = [
@@ -20,6 +24,9 @@ tools = [
     *keypair_tools,              # 3 tools: create, delete, list keypairs
     *security_group_tools,       # 6 tools: create, delete, authorize, revoke, describe, list SGs
     *launch_template_tools,      # 6 tools: create, create version, describe, delete, list, launch from template
+    *ami_tools,
+    *metadata_tools,
+    *pricing_tools
 ]
 
 # Export individual tool lists for granular imports
@@ -31,4 +38,7 @@ __all__ = [
     "keypair_tools",
     "security_group_tools",
     "launch_template_tools",
+    "ami_tools",
+    "metadata_tools",
+    "pricing_tools"
 ]

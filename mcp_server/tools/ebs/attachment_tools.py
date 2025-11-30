@@ -2,6 +2,7 @@
 
 import boto3
 from fastmcp.tools import FunctionTool
+from typing import Optional
 from mcp_server.models.ebs import (
     AttachVolumeParams,
     DetachVolumeParams,
@@ -10,36 +11,48 @@ from mcp_server.models.ebs import (
 # =======================================================
 # ATTACH
 # =======================================================
-def attach_volume(params: AttachVolumeParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def attach_volume(
+    *,
+    VolumeId: str,
+    InstanceId: str,
+    Device: str,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
     return ec2.attach_volume(
-        VolumeId=params.VolumeId,
-        InstanceId=params.InstanceId,
-        Device=params.Device,
+        VolumeId=VolumeId,
+        InstanceId=InstanceId,
+        Device=Device,
     )
 
 
 # =======================================================
 # DETACH
 # =======================================================
-def detach_volume(params: DetachVolumeParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def detach_volume(
+    *,
+    VolumeId: str,
+    InstanceId: Optional[str] = None,
+    Force: Optional[bool] = False,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
     return ec2.detach_volume(
-        VolumeId=params.VolumeId,
-        InstanceId=params.InstanceId,
-        Force=params.Force,
+        VolumeId=VolumeId,
+        InstanceId=InstanceId,
+        Force=Force,
     )
 
 
 tools = [
     FunctionTool(
-        name="aws.attach_volume",
+        name="ebs.attach_volume",
         description="Attach an EBS volume to EC2",
         fn=attach_volume,
         parameters=AttachVolumeParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.detach_volume",
+        name="ebs.detach_volume",
         description="Detach an EBS volume",
         fn=detach_volume,
         parameters=DetachVolumeParams.model_json_schema(),

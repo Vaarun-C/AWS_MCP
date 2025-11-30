@@ -2,6 +2,7 @@
 
 import boto3
 from fastmcp.tools import FunctionTool
+from typing import Optional
 
 from mcp_server.models.vpc.describe_vpc import (
     RegionOnlyParams,
@@ -13,11 +14,11 @@ from mcp_server.models.vpc.describe_vpc import (
 # LIST ALL VPCS
 # ============================================================
 
-def list_vpcs(params: RegionOnlyParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def list_vpcs(*, region: str = "ap-south-1"):
+    ec2 = boto3.client("ec2", region_name=region)
     resp = ec2.describe_vpcs()
     return {
-        "region": params.region,
+        "region": region,
         "vpcs": resp.get("Vpcs", [])
     }
 
@@ -26,15 +27,15 @@ def list_vpcs(params: RegionOnlyParams):
 # GET DEFAULT VPC
 # ============================================================
 
-def get_default_vpc(params: RegionOnlyParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def get_default_vpc(*, region: str = "ap-south-1"):
+    ec2 = boto3.client("ec2", region_name=region)
     resp = ec2.describe_vpcs(
         Filters=[{"Name": "isDefault", "Values": ["true"]}]
     )
 
     vpcs = resp.get("Vpcs", [])
     return {
-        "region": params.region,
+        "region": region,
         "default_vpc": vpcs[0] if vpcs else None
     }
 
@@ -43,16 +44,16 @@ def get_default_vpc(params: RegionOnlyParams):
 # DESCRIBE SPECIFIC VPC
 # ============================================================
 
-def describe_vpc(params: DescribeVpcParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def describe_vpc(*, vpc_id: Optional[str] = None, region: str = "ap-south-1"):
+    ec2 = boto3.client("ec2", region_name=region)
 
-    if params.vpc_id:
-        resp = ec2.describe_vpcs(VpcIds=[params.vpc_id])
+    if vpc_id:
+        resp = ec2.describe_vpcs(VpcIds=[vpc_id])
     else:
         resp = ec2.describe_vpcs()
 
     return {
-        "region": params.region,
+        "region": region,
         "vpcs": resp.get("Vpcs", [])
     }
 
@@ -61,11 +62,11 @@ def describe_vpc(params: DescribeVpcParams):
 # LIST SUBNETS
 # ============================================================
 
-def list_subnets(params: RegionOnlyParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def list_subnets(*, region: str = "ap-south-1"):
+    ec2 = boto3.client("ec2", region_name=region)
     resp = ec2.describe_subnets()
     return {
-        "region": params.region,
+        "region": region,
         "subnets": resp.get("Subnets", [])
     }
 
@@ -74,8 +75,8 @@ def list_subnets(params: RegionOnlyParams):
 # GET ALL SUBNETS IN DEFAULT VPC
 # ============================================================
 
-def get_default_subnets(params: RegionOnlyParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def get_default_subnets(*, region: str = "ap-south-1"):
+    ec2 = boto3.client("ec2", region_name=region)
 
     # Fetch default VPC
     vpcs = ec2.describe_vpcs(
@@ -84,7 +85,7 @@ def get_default_subnets(params: RegionOnlyParams):
 
     if not vpcs:
         return {
-            "region": params.region,
+            "region": region,
             "error": "Default VPC not found",
             "subnets": []
         }
@@ -96,7 +97,7 @@ def get_default_subnets(params: RegionOnlyParams):
     )
 
     return {
-        "region": params.region,
+        "region": region,
         "default_vpc_id": default_vpc_id,
         "subnets": resp.get("Subnets", [])
     }
@@ -106,20 +107,25 @@ def get_default_subnets(params: RegionOnlyParams):
 # DESCRIBE SPECIFIC SUBNET OR FILTER BY VPC
 # ============================================================
 
-def describe_subnet(params: DescribeSubnetParams):
-    ec2 = boto3.client("ec2", region_name=params.region)
+def describe_subnet(
+    *,
+    subnet_id: Optional[str] = None,
+    vpc_id: Optional[str] = None,
+    region: str = "ap-south-1"
+):
+    ec2 = boto3.client("ec2", region_name=region)
 
     filters = []
-    if params.vpc_id:
-        filters.append({"Name": "vpc-id", "Values": [params.vpc_id]})
+    if vpc_id:
+        filters.append({"Name": "vpc-id", "Values": [vpc_id]})
 
-    if params.subnet_id:
-        resp = ec2.describe_subnets(SubnetIds=[params.subnet_id])
+    if subnet_id:
+        resp = ec2.describe_subnets(SubnetIds=[subnet_id])
     else:
         resp = ec2.describe_subnets(Filters=filters or None)
 
     return {
-        "region": params.region,
+        "region": region,
         "subnets": resp.get("Subnets", [])
     }
 
@@ -130,37 +136,37 @@ def describe_subnet(params: DescribeSubnetParams):
 
 tools = [
     FunctionTool(
-        name="aws.list_vpcs",
+        name="vpc.list_vpcs",
         description="List all VPCs in a region.",
         fn=list_vpcs,
         parameters=RegionOnlyParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.get_default_vpc",
+        name="vpc.get_default_vpc",
         description="Get the default VPC in a region.",
         fn=get_default_vpc,
         parameters=RegionOnlyParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.describe_vpc",
+        name="vpc.describe_vpc",
         description="Describe specific VPC or all VPCs.",
         fn=describe_vpc,
         parameters=DescribeVpcParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.list_subnets",
+        name="vpc.list_subnets",
         description="List all subnets in a region.",
         fn=list_subnets,
         parameters=RegionOnlyParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.get_default_subnets",
+        name="vpc.get_default_subnets",
         description="List all subnets that belong to the default VPC.",
         fn=get_default_subnets,
         parameters=RegionOnlyParams.model_json_schema()
     ),
     FunctionTool(
-        name="aws.describe_subnet",
+        name="vpc.describe_subnet",
         description="Describe a subnet or list subnets in a specific VPC.",
         fn=describe_subnet,
         parameters=DescribeSubnetParams.model_json_schema()

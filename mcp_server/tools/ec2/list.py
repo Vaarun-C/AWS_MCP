@@ -317,51 +317,51 @@ def cancel_spot_request(
 # --------------------------------
 tools = [
     FunctionTool(
-        name="aws.list_ec2_instances",
+        name="ec2.list_ec2_instances",
         description="List EC2 instances.",
         fn=list_ec2_instances,
         parameters=ListEC2Params.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.get_instance_details",
+        name="ec2.get_instance_details",
         description="Get full details of an EC2 instance.",
         fn=get_instance_details,
         parameters=GetInstanceDetailsParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.get_instance_running_details",
+        name="ec2.get_instance_running_details",
         description="Get running status of an EC2 instance",
         fn=get_instance_status,
         parameters=GetInstanceDetailsParams.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_running_instances",
+        name="ec2.list_running_instances",
         description="Get full list of instances currently running and being billed",
         fn=list_running_instances,
         parameters=ListEC2Params.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_instances_by_tag",
+        name="ec2.list_instances_by_tag",
         description="Get details of instances belonging to a particular tag_key and tag_value",
         fn=list_instances_by_tag,
         parameters=ListEC2ParamsTagwise.model_json_schema(),
     ),
     FunctionTool(
-        name="aws.list_spot_requests",
+        name="ec2.list_spot_requests",
         description="List all AWS Spot Instance Requests.",
         fn=list_spot_requests,
         parameters=ListSpotRequestsParams.model_json_schema(),
     ),
 
     FunctionTool(
-        name="aws.get_spot_request_details",
+        name="ec2.get_spot_request_details",
         description="Get details for a specific Spot Instance Request.",
         fn=get_spot_request_details,
         parameters=GetSpotRequestDetailsParams.model_json_schema(),
     ),
 
     FunctionTool(
-        name="aws.cancel_spot_request",
+        name="ec2.cancel_spot_request",
         description="Cancel a Spot Instance Request.",
         fn=cancel_spot_request,
         parameters=CancelSpotRequestParams.model_json_schema(),
