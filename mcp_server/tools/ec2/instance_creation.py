@@ -6,6 +6,7 @@ from mcp_server.models.ec2 import (
 )
 import boto3
 import os
+from fastmcp.tools import FunctionTool
 
 DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 
@@ -212,3 +213,30 @@ def generate_instance_ssh_instruction(params: InstanceSSHInstructionParams):
 
     except Exception as e:
         return {"error": str(e)}
+    
+tools = [
+    FunctionTool(
+        name="aws.create_instance",
+        description="Create an EC2 instance with full parameter support.",
+        fn=create_instance,
+        parameters=CreateInstanceParams.model_json_schema(),
+    ),
+    FunctionTool(
+        name="aws.create_instance_minimal",
+        description="Create an EC2 instance with minimal required fields.",
+        fn=create_instance_minimal,
+        parameters=CreateInstanceMinimalParams.model_json_schema(),
+    ),
+    FunctionTool(
+        name="aws.create_spot_instance",
+        description="Create a Spot EC2 instance using request_spot_instances.",
+        fn=create_spot_instance,
+        parameters=CreateSpotInstanceParams.model_json_schema(),
+    ),
+    FunctionTool(
+        name="aws.generate_instance_ssh_instruction",
+        description="Generate ready-to-use SSH command for an EC2 instance.",
+        fn=generate_instance_ssh_instruction,
+        parameters=InstanceSSHInstructionParams.model_json_schema(),
+    ),
+]

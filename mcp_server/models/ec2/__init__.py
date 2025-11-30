@@ -40,6 +40,18 @@ from .security_group import (
     ListSGParams,
 )
 
+from .launch_templates import (
+    LaunchTemplateTag,
+    LaunchTemplateBlockDeviceEBS,
+    LaunchTemplateBlockDevice,
+    LaunchTemplateNetworkInterface,
+    CreateLaunchTemplateParams,
+    CreateLaunchTemplateVersionParams,
+    LaunchFromTemplateParams,
+    DescribeLaunchTemplateParams,
+    DeleteLaunchTemplateParams,
+)
+
 __all__ = [
     # List models
     "ListEC2ParamsTagwise",
@@ -76,4 +88,15 @@ __all__ = [
     "ModifyRulesParams",
     "DescribeSGParams",
     "ListSGParams",
+    
+    # Launch template models
+    "LaunchTemplateTag",
+    "LaunchTemplateBlockDeviceEBS",
+    "LaunchTemplateBlockDevice",
+    "LaunchTemplateNetworkInterface",
+    "CreateLaunchTemplateParams",
+    "CreateLaunchTemplateVersionParams",
+    "LaunchFromTemplateParams",
+    "DescribeLaunchTemplateParams",
+    "DeleteLaunchTemplateParams",
 ]

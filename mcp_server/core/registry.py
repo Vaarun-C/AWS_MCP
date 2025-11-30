@@ -1,5 +1,5 @@
-import pkgutil
 import importlib
+import sys
 import mcp_server.tools
 
 
@@ -7,31 +7,37 @@ class ToolRegistry:
     @staticmethod
     def load_all_tools():
         all_tools = []
+        
+        # Only load from service-level modules that have implementations
+        # This avoids duplicate registration from individual tool files
+        service_modules = [
+            "mcp_server.tools.ec2",
+            "mcp_server.tools.ebs",
+            "mcp_server.tools.vpc"
+            # Add more service modules as they are implemented:
+            # "mcp_server.tools.ecs",
+            # "mcp_server.tools.ecr",
+            # "mcp_server.tools.lambda_tools",
+            # "mcp_server.tools.s3",
+            # "mcp_server.tools.cloudwatch",
+        ]
 
-        package_path = mcp_server.tools.__path__
-        package_prefix = mcp_server.tools.__name__ + "."
-
-        for module in pkgutil.walk_packages(package_path, package_prefix):
-            module_name = module.name
-
-            # Skip __init__.py
-            if module_name.endswith("__init__"):
-                continue
-
-            print(f"[Registry] Found module: {module_name}")
+        for module_name in service_modules:
+            print(f"[Registry] Loading service module: {module_name}", file=sys.stderr)
 
             try:
                 mod = importlib.import_module(module_name)
-                print(f"[Registry] Imported: {module_name}")
             except Exception as e:
-                print(f"[Registry] ERROR importing {module_name} => {e}")
+                print(f"[Registry] ERROR importing {module_name} => {e}", file=sys.stderr)
                 continue
 
             tools_list = getattr(mod, "tools", None)
-            print(f"[Registry] Module tools: {tools_list}")
-
+            
             if tools_list:
+                print(f"[Registry] Found {len(tools_list)} tools from {module_name}", file=sys.stderr)
                 all_tools.extend(tools_list)
+            else:
+                print(f"[Registry] No tools found in {module_name}", file=sys.stderr)
 
-        print(f"[Registry] FINAL TOOLS: {all_tools}")
+        print(f"[Registry] Total tools loaded: {len(all_tools)}", file=sys.stderr)
         return all_tools
