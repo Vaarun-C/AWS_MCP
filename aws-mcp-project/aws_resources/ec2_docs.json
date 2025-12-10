@@ -1,0 +1,9 @@
+{
+  "service": "ec2",
+  "url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html",
+  "methods": [],
+  "examples": [
+    "importboto3client=boto3.client('ec2')"
+  ],
+  "timestamp": 95504.303531416
+}

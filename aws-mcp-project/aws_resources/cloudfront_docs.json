@@ -1,0 +1,10 @@
+{
+  "service": "cloudfront",
+  "url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudfront.html",
+  "methods": [],
+  "examples": [
+    "importboto3client=boto3.client('cloudfront')",
+    "importdatetimefromcryptography.hazmat.backendsimportdefault_backendfromcryptography.hazmat.primitivesimporthashesfromcryptography.hazmat.primitivesimportserializationfromcryptography.hazmat.primitives.asymmetricimportpaddingfrombotocore.signersimportCloudFrontSignerdefrsa_signer(message):withopen('path/to/key.pem','rb')askey_file:private_key=serialization.load_pem_private_key(key_file.read(),password=None,backend=default_backend())returnprivate_key.sign(message,padding.PKCS1v15(),hashes.SHA1())key_id='AKIAIOSFODNN7EXAMPLE'url='http://d2949o5mkkp72v.cloudfront.net/hello.txt'expire_date=datetime.datetime(2017,1,1)cloudfront_signer=CloudFrontSigner(key_id,rsa_signer)# Create a signed url that will be valid until the specific expiry date# provided using a canned policy.signed_url=cloudfront_signer.generate_presigned_url(url,date_less_than=expire_date)print(signed_url)"
+  ],
+  "timestamp": 13426.191374375
+}

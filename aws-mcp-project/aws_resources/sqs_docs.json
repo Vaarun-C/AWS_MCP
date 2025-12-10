@@ -1,0 +1,9 @@
+{
+  "service": "sqs",
+  "url": "https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sqs.html",
+  "methods": [],
+  "examples": [
+    "importboto3client=boto3.client('sqs')"
+  ],
+  "timestamp": 107860.737124958
+}

@@ -1,0 +1,27 @@
+{
+  "ec2": {
+    "file": "aws_resources/ec2_docs.json",
+    "timestamp": 95504.303531416,
+    "method_count": 0
+  },
+  "lambda": {
+    "file": "aws_resources/lambda_docs.json",
+    "timestamp": 96269.075251333,
+    "method_count": 0
+  },
+  "s3": {
+    "file": "aws_resources/s3_docs.json",
+    "timestamp": 106559.014862791,
+    "method_count": 0
+  },
+  "sqs": {
+    "file": "aws_resources/sqs_docs.json",
+    "timestamp": 107860.737124958,
+    "method_count": 0
+  },
+  "cloudfront": {
+    "file": "aws_resources/cloudfront_docs.json",
+    "timestamp": 13426.191374375,
+    "method_count": 0
+  }
+}

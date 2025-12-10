@@ -1,0 +1,118 @@
+/* ALAIY CLOUD DESIGN SPEC V1.0 
+   Theme: Windows 95 / Typewriter / Unlined Paper
+*/
+
+/* --- CORE TYPOGRAPHY & BACKGROUND --- */
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+
+:root {
+    --paper-white: #FFFFFF;
+    --text-black: #000000;
+    --win95-gray: #C0C0C0;
+    --dark-blue-accent: #000080;
+    --light-blue-link: #0000FF; /* Classic hyperlink blue */
+    --border-highlight: #FFFFFF;
+    --border-shadow: #808080;
+    --border-dark-shadow: #000000;
+}
+
+body, p, div, span, input, button, textarea {
+    font-family: 'Courier New', 'Courier Prime', monospace !important;
+    background-color: var(--paper-white) !important;
+    color: var(--text-black) !important;
+}
+
+/* Hide the Chainlit logo branding if possible */
+a[href*="chainlit"] {
+    display: none !important;
+}
+
+/* --- CHAT AREA --- */
+
+/* Remove default bubble styling */
+.step-content, .message-content {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+/* User Messages: Right Aligned */
+.message-row.user {
+    flex-direction: row-reverse !important;
+}
+
+.message-row.user .message-content {
+    text-align: right !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* Assistant Messages: Left Aligned */
+.message-row.assistant .message-content {
+    text-align: left !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+
+/* Hide Avatars to create "Document" feel */
+.avatar {
+    display: none !important;
+}
+
+/* --- INPUT FIELD --- */
+
+/* The text input area */
+#chat-input {
+    background-color: var(--paper-white) !important;
+    color: var(--text-black) !important;
+    border-top: 2px solid var(--border-shadow) !important;
+    border-left: 2px solid var(--border-shadow) !important;
+    border-right: 2px solid var(--border-highlight) !important;
+    border-bottom: 2px solid var(--border-highlight) !important;
+    box-shadow: inset 1px 1px 0px var(--border-dark-shadow) !important;
+    border-radius: 0px !important;
+    padding: 10px !important;
+}
+
+/* --- BUTTONS --- */
+button {
+    border-radius: 0px !important;
+    /* Win95 3D Raised Border */
+    border-top: 2px solid var(--border-highlight) !important;
+    border-left: 2px solid var(--border-highlight) !important;
+    border-right: 2px solid var(--border-shadow) !important;
+    border-bottom: 2px solid var(--border-shadow) !important;
+    background-color: var(--win95-gray) !important; /* Default button gray */
+    color: black !important;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Primary "Send" Button - Dark Blue Spec */
+button[aria-label="Send message"] {
+    background-color: var(--dark-blue-accent) !important;
+    color: white !important;
+}
+
+button:active {
+    /* Depressed State */
+    border-top: 2px solid var(--border-shadow) !important;
+    border-left: 2px solid var(--border-shadow) !important;
+    border-right: 2px solid var(--border-highlight) !important;
+    border-bottom: 2px solid var(--border-highlight) !important;
+    transform: translate(1px, 1px);
+}
+
+/* --- TOOL STEPS (The "thinking" blocks) --- */
+.step-header {
+    border: 1px dashed var(--text-black) !important;
+    margin-bottom: 5px;
+    background-color: #f0f0f0 !important; /* Slight grey to differentiate system logs */
+}
+
+/* --- LINKS --- */
+a {
+    color: var(--light-blue-link) !important;
+    text-decoration: underline !important;
+}
