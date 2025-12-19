@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alaiy Cloud Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              mono: ['"Courier Prime"', '"Courier New"', 'monospace'],
+            },
+            colors: {
+              paper: '#FFFFFF',
+              ink: '#000000',
+              accent: '#000080',
+              'win-gray': '#C0C0C0',
+              'win-dark': '#404040',
+              'win-light': '#FFFFFF',
+            },
+            boxShadow: {
+              'inset-3d': 'inset 2px 2px 0px #404040, inset -1px -1px 0px #FFFFFF',
+              'outset-3d': '2px 2px 0px #000000, inset 2px 2px 0px #FFFFFF, inset -2px -2px 0px #404040',
+              'outset-pressed': 'inset 2px 2px 0px #404040, inset -1px -1px 0px #FFFFFF',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Custom scrollbar to match the retro aesthetic */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #eee;
+        border-left: 1px solid #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #000;
+        border: 2px solid #fff;
+      }
+      body {
+        background-color: #FFFFFF;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "uuid": "https://aistudiocdn.com/uuid@^13.0.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="h-screen overflow-hidden font-mono text-ink">
+    <div id="root" class="h-full w-full flex justify-center"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
